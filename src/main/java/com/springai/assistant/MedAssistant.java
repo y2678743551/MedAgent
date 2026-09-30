@@ -1,5 +1,6 @@
 package com.springai.assistant;
 
+import com.springai.tools.AppointmentTools;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.core.io.ClassPathResource;
@@ -18,9 +19,10 @@ public class MedAssistant {
 
     private final ChatClient chatClient;
     private final String systemPrompt;
-
-    public MedAssistant(ChatClient chatClient) throws IOException {
+    private final AppointmentTools appointmentTools;
+    public MedAssistant(ChatClient chatClient, AppointmentTools appointmentTools) throws IOException {
         this.chatClient = chatClient;
+        this.appointmentTools = appointmentTools;
         this.systemPrompt = StreamUtils.copyToString(
                 new ClassPathResource("prompt").getInputStream(),
                 StandardCharsets.UTF_8)
@@ -31,6 +33,7 @@ public class MedAssistant {
         return chatClient.prompt()
                 .system(systemPrompt)
                 .user(message)
+                .tools(appointmentTools)
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, String.valueOf(memoryId)))
                 .call()
                 .content();
