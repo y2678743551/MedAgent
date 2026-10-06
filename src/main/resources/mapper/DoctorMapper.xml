@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springai.mapper.DoctorMapper">
+    <select id="getAvailableDoctors" resultType="com.springai.entity.Doctor">
+        SELECT DISTINCT d.* FROM doctor d
+        JOIN schedule s ON s.doctor_id = d.id
+        <where>
+            <if test="departmentId!=null">AND d.department_id = #{departmentId} </if>
+            <if test="date!=null">AND s.work_date = #{date} </if>
+            <if test="time!=null">AND s.time_slot = #{time} </if>
+            AND s.booked_slots &lt; s.total_slots
+            AND d.enabled = 1
+            AND s.status = 1
+        </where>
+    </select>
+</mapper>

@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class Appointment {
     @TableId(type = IdType.AUTO)
     private Long id;
+    private Long scheduleId;
     private String username;
     private String idCard;
     private String department;
