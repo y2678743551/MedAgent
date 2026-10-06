@@ -6,6 +6,7 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
+import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -29,13 +30,13 @@ public class MedAssistant {
                 .replace("{{current_date}}", LocalDate.now().toString());
     }
 
-    public String chat(Long memoryId, String message) {
+    public Flux<String> chat(Long memoryId, String message) {
         return chatClient.prompt()
                 .system(systemPrompt)
                 .user(message)
                 .tools(appointmentTools)
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, String.valueOf(memoryId)))
-                .call()
+                .stream()
                 .content();
     }
 

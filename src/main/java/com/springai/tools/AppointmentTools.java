@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class AppointmentTools {
     @Autowired
     private AppointmentService appointmentService;
-    @Tool(name="预约挂号", description= "根据参数，先执行工具方法queryDepartment查询是否可预约，并直接给用户回答是否可预约，并让用户确认所有预约信息，用户确认后再进行预约。")
+    @Tool(name="预约挂号", description= "根据参数，先执行工具方法queryDepartment查询是否可预约，并直接给用户回答是否可预约，并让用户确认所有预约信息，用户确认后再进行预约。如果用户没有指定医生则在向量存储中查询相似的医生进行预约")
     public String bookAppointment(Appointment appointment){
         Appointment appointmentDB = appointmentService.getOne(appointment);
         if(appointmentDB == null){
