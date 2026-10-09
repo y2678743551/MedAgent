@@ -1,5 +1,6 @@
 package com.springai.config;
 
+import com.springai.advisor.TokenCountAdvisor;
 import com.springai.repository.MongoChatMemoryRepository;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -36,6 +37,7 @@ public class ChatClientConfig {
                 .defaultAdvisors(QuestionAnswerAdvisor
                         .builder(vectorStore)
                         .build())
+                .defaultAdvisors(new TokenCountAdvisor())
                 .build();
     }
     @Bean

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
 
 
 @SpringBootTest
@@ -48,7 +48,7 @@ public class PineconeTest {
         List<Resource> selected = new ArrayList<>();
         List<String> excluded = new ArrayList<>();
         List<String> deduped = new ArrayList<>();
-        select(resources, selected, excluded, deduped);
+        select(resources, selected,  deduped);
 
         System.out.println("[RAG] 排除（不在灌库范围）：" + join(excluded));
         System.out.println("[RAG] 同名去重跳过：" + join(deduped));
@@ -87,11 +87,9 @@ public class PineconeTest {
 
     /**
      * @param selected 按优先级选出、真正要灌库的文件（保持稳定顺序）
-     * @param excluded 命中排除名单的文件名
      * @param deduped  因同名而被跳过的文件名（含实际采用了哪一份）
      */
-    private void select(Resource[] resources, List<Resource> selected,
-                        List<String> excluded, List<String> deduped) {
+    private void select(Resource[] resources, List<Resource> selected, List<String> deduped) {
 
         Map<String, List<Resource>> byExtension = new LinkedHashMap<>();
         for (String extension : SUPPORTED) {
@@ -125,9 +123,8 @@ public class PineconeTest {
         }
     }
 
-    /**
-     * 按扩展名读取纯文本：PDF 交给 Tika 抽取，md / txt 直接按 UTF-8 读。
-     */
+
+
     private String readText(Resource resource, String source) throws IOException {
         if (source.toLowerCase().endsWith(".pdf")) {
             StringBuilder text = new StringBuilder();
@@ -139,12 +136,11 @@ public class PineconeTest {
         return stripBom(resource.getContentAsString(StandardCharsets.UTF_8));
     }
 
-    /** 去掉 UTF-8 BOM，否则第一个标题会被当成 BOM + "#"，切分结果少一段。 */
+
     private String stripBom(String text) {
         return text != null && text.startsWith("\uFEFF") ? text.substring(1) : text;
     }
 
-    /** 取小写扩展名（不含点）；没有扩展名时返回空串。 */
     private String extensionOf(String name) {
         int dot = name.lastIndexOf('.');
         return dot < 0 ? "" : name.substring(dot + 1).toLowerCase();
