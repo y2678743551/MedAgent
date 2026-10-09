@@ -1,7 +1,8 @@
 package com.springai.assistant;
 
-import com.springai.tools.AppointmentTools;
+import com.springai.tools.MedTools;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -20,8 +21,8 @@ public class MedAssistant {
 
     private final ChatClient chatClient;
     private final String systemPrompt;
-    private final AppointmentTools appointmentTools;
-    public MedAssistant(ChatClient chatClient, AppointmentTools appointmentTools) throws IOException {
+    private final MedTools appointmentTools;
+    public MedAssistant(ChatClient chatClient, MedTools appointmentTools) throws IOException {
         this.chatClient = chatClient;
         this.appointmentTools = appointmentTools;
         this.systemPrompt = StreamUtils.copyToString(

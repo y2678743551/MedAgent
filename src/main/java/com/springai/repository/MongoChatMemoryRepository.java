@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -29,6 +30,9 @@ public class MongoChatMemoryRepository  implements ChatMemoryRepository {
         Criteria criteria = Criteria.where("_id").is(conversationId);
         Query query = new Query(criteria);
         ChatMemoryDocument memoryDocument = mongoTemplate.findOne(query, ChatMemoryDocument.class);
+        memoryDocument.setUpdatedTime(LocalDateTime.now());
+        memoryDocument.setExpireAt(LocalDateTime.now().plusDays(1));
+        mongoTemplate.save(memoryDocument);
         if (memoryDocument != null) {
             return ChatMessageCodec.toMessage(memoryDocument.getMessages());
         }
@@ -39,7 +43,9 @@ public class MongoChatMemoryRepository  implements ChatMemoryRepository {
     public void saveAll(String conversationId, List<Message> messages) {
         ChatMemoryDocument doc = new ChatMemoryDocument(
                 conversationId,
-                ChatMessageCodec.toDocument(messages));
+                ChatMessageCodec.toDocument(messages),
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1));
         mongoTemplate.save(doc);
 
     }
