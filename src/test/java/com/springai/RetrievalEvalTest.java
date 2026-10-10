@@ -5,6 +5,7 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 
@@ -24,7 +25,9 @@ public class RetrievalEvalTest {
 
     @Autowired
     private VectorStore vectorStore;
-
+    @Autowired
+    @Qualifier("esHybridVectorStore")
+    private VectorStore esHybridVectorStore;
     @Test
     public void evaluateRetrieval() throws IOException {
 
@@ -41,9 +44,7 @@ public class RetrievalEvalTest {
             List<Document> docs = vectorStore.similaritySearch(
                     SearchRequest.builder().query(c.question()).topK(TOP_K).build());
 
-            if (docs != null && docs.stream().anyMatch(d -> d.getMetadata().containsKey("source"))) {
-                sawSourceMetadata = true;
-            }
+
 
             int rank = firstHitRank(docs, c);
             if (rank > 0) {
@@ -71,12 +72,7 @@ public class RetrievalEvalTest {
             misses.forEach(m -> System.out.println("  - " + m));
         }
 
-        if (!sawSourceMetadata) {
-            System.out.println();
-            System.out.println("  前 " + TOP_K + " 条里没有一条带 source 元数据。");
-            System.out.println("  说明向量库还是旧数据 —— 请先跑 PineconeTest 用 MarkdownSplitter 重新灌库，");
-            System.out.println("  否则本评测的 source 判定条件永远不成立，指标必然为 0。");
-        }
+
     }
 
     /**
